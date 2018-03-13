@@ -1,0 +1,4 @@
+
+☐ Add support for `cmd+click` on a name
+  ☐ require ( 'lodash' )
+  ☐ import * as _ from 'lodash'
