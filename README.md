@@ -1,4 +1,4 @@
-# VSC Open in NPM
+# Open in NPM
 
 <p align="center">
 	<img src="https://raw.githubusercontent.com/fabiospampinato/vscode-open-in-npm/master/resources/logo-128x128.png" alt="Logo">
@@ -8,10 +8,10 @@ Open the current selection, project, or arbitrary string, in npmjs.com.
 
 ## Install
 
-Run the following in the command palette:
+Follow the instructions in the [Marketplace](https://marketplace.visualstudio.com/items?itemName=fabiospampinato.vscode-open-in-npm), or run the following in the command palette:
 
 ```shell
-ext install vscode-open-in-npm
+ext install fabiospampinato.vscode-open-in-npm
 ```
 
 ## Usage
