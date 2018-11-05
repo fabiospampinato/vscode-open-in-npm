@@ -1,7 +1,7 @@
 # Open in NPM
 
 <p align="center">
-	<img src="https://raw.githubusercontent.com/fabiospampinato/vscode-open-in-npm/master/resources/logo-128x128.png" alt="Logo">
+	<img src="https://raw.githubusercontent.com/fabiospampinato/vscode-open-in-npm/master/resources/logo.png" width="128" alt="Logo">
 </p>
 
 Open the current selection, project, or arbitrary string, in npmjs.com.
