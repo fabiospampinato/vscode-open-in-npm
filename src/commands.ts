@@ -1,90 +1,26 @@
 
 /* IMPORT */
 
-import * as _ from 'lodash';
-import * as openPath from 'open';
-import * as path from 'path';
-import * as vscode from 'vscode';
-import Utils from './utils';
+import vscode from 'vscode';
+import {castArray, getPackagesFromEditor, getPackagesFromProject, getPackagesFromPrompt} from './utils';
 
-/* COMMANDS */
+/* MAIN */
 
-async function open ( pkg?: string | string[] ) {
+const open = async ( names?: string | string[] ): Promise<void> => {
 
-  /* SELECTIONS */
+  names ||= getPackagesFromEditor () || await getPackagesFromPrompt ( getPackagesFromProject () );
 
-  if ( !pkg ) {
+  if ( !names?.length ) return;
 
-    const editor = vscode.window.activeTextEditor;
+  for ( const name of castArray ( names ) ) {
 
-    if ( editor ) {
+    const url = `https://www.npmjs.com/package/${name}`;
 
-      const {document, selections} = editor,
-            texts = _.compact ( selections.map ( selection => document.getText ( selection ) ) );
-
-      if ( texts.length ) {
-
-        pkg = texts;
-
-      }
-
-    }
+    vscode.env.openExternal ( vscode.Uri.parse ( url ) );
 
   }
 
-  /* PROJECT NAME */
-
-  let projectName;
-
-  if ( !pkg ) {
-
-    const editor = vscode.window.activeTextEditor,
-          editorPath = editor && editor.document.uri.fsPath,
-          rootPath = Utils.folder.getRootPath ( editorPath );
-
-    if ( rootPath ) {
-
-      const projectPath = await Utils.folder.getWrapperPathOf ( rootPath, editorPath || rootPath, 'package.json' );
-
-      if ( projectPath ) {
-
-        const packagePath = path.join ( projectPath, 'package.json' ),
-              packageContent = await Utils.file.read ( packagePath ),
-              packageObj = _.attempt ( JSON.parse, packageContent ),
-              isNPMPackage = !_.isError ( packageObj ) && packageObj.name;
-
-        if ( isNPMPackage ) {
-
-          projectName = packageObj.name;
-
-        }
-
-      }
-
-    }
-
-  }
-
-  /* INPUT BOX */
-
-  if ( !pkg ) {
-
-    pkg = await vscode.window.showInputBox ({
-      placeHolder: 'NPM package name...',
-      value: projectName
-    });
-
-  }
-
-  /* OPEN */
-
-  if ( pkg ) {
-
-    _.castArray ( pkg ).map ( pkg => openPath ( `https://www.npmjs.com/package/${pkg}` ) );
-
-  }
-
-}
+};
 
 /* EXPORT */
 

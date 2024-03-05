@@ -1,92 +1,66 @@
 
 /* IMPORT */
 
-import * as _ from 'lodash';
-import * as absolute from 'absolute';
-import * as findUp from 'find-up';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as pify from 'pify';
-import * as vscode from 'vscode';
-import * as Commands from './commands';
+import findUp from 'find-up-json';
+import vscode from 'vscode';
+import {getProjectRootPath} from 'vscode-extras';
 
-/* UTILS */
+/* MAIN */
 
-const Utils = {
+const castArray = <T> ( value: T | T[] ): T[] => {
 
-  initCommands ( context: vscode.ExtensionContext ) {
+  return Array.isArray ( value ) ? value : [value];
 
-    const {commands} = vscode.extensions.getExtension ( 'fabiospampinato.vscode-open-in-npm' ).packageJSON.contributes;
+};
 
-    commands.forEach ( ({ command, title }) => {
+const getPackagesFromEditor = (): string[] | undefined => {
 
-      const commandName = _.last ( command.split ( '.' ) ) as string,
-            handler = Commands[commandName],
-            disposable = vscode.commands.registerCommand ( command, () => handler () );
+  const {activeTextEditor} = vscode.window;
 
-      context.subscriptions.push ( disposable );
+  if ( !activeTextEditor ) return;
 
-    });
+  const {document, selections} = activeTextEditor;
+  const texts = selections.map ( selection => document.getText ( selection ) ).filter ( Boolean );
 
-    return Commands;
+  if ( !texts.length ) return;
 
-  },
+  return texts;
 
-  file: {
+};
 
-    async read ( filePath ) {
+const getPackagesFromProject = (): string | undefined => {
 
-      try {
-        return ( await pify ( fs.readFile )( filePath, { encoding: 'utf8' } ) ).toString ();
-      } catch ( e ) {
-        return;
-      }
+  const repoPath = getProjectRootPath ();
 
-    }
+  if ( !repoPath ) return;
 
-  },
+  const pkg = findUp ( 'package.json', repoPath )?.content;
 
-  folder: {
+  if ( !pkg ) return;
 
-    getRootPath ( basePath? ) {
+  const isPackage = ( 'name' in pkg ) && isString ( pkg.name );
 
-      const {workspaceFolders} = vscode.workspace;
+  if ( !isPackage ) return;
 
-      if ( !workspaceFolders ) return;
+  return pkg.name;
 
-      const firstRootPath = workspaceFolders[0].uri.fsPath;
+};
 
-      if ( !basePath || !absolute ( basePath ) ) return firstRootPath;
+const getPackagesFromPrompt = async ( value?: string ): Promise<string | undefined> => {
 
-      const rootPaths = workspaceFolders.map ( folder => folder.uri.fsPath ),
-            sortedRootPaths = _.sortBy ( rootPaths, [path => path.length] ).reverse (); // In order to get the closest root
+  return await vscode.window.showInputBox ({
+    placeHolder: 'NPM package name...',
+    value
+  });
 
-      return sortedRootPaths.find ( rootPath => basePath.startsWith ( rootPath ) );
+};
 
-    },
+const isString = ( value: unknown ): value is string => {
 
-    async getWrapperPathOf ( rootPath, cwdPath, findPath ) {
-
-      const foundPath = await findUp ( findPath, { cwd: cwdPath } );
-
-      if ( foundPath ) {
-
-        const wrapperPath = path.dirname ( foundPath );
-
-        if ( wrapperPath.startsWith ( rootPath ) ) {
-
-          return wrapperPath;
-
-        }
-
-      }
-
-    }
-
-  }
+  return typeof value === 'string';
 
 };
 
 /* EXPORT */
 
-export default Utils;
+export {castArray, getPackagesFromEditor, getPackagesFromProject, getPackagesFromPrompt, isString};
