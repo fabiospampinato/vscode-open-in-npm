@@ -30,17 +30,23 @@ const getPackagesFromEditor = (): string[] | undefined => {
 const getPackagesFromProject = (): string | undefined => {
 
   const pkg = getPackage ()?.content;
-  const isPackage = ( 'name' in pkg ) && isString ( pkg.name );
+  const isPackage = isObject ( pkg ) && ( 'name' in pkg ) && isString ( pkg.name );
 
   if ( !isPackage ) return;
 
-  return pkg.name;
+  return `${pkg.name}`;
 
 };
 
 const getPackagesFromPrompt = async ( value?: string ): Promise<string | undefined> => {
 
   return prompt.string ( 'NPM package name...', value );
+
+};
+
+const isObject = ( value: unknown ): value is object => {
+
+  return typeof value === 'object' && value !== null;
 
 };
 
@@ -52,4 +58,4 @@ const isString = ( value: unknown ): value is string => {
 
 /* EXPORT */
 
-export {castArray, getPackagesFromEditor, getPackagesFromProject, getPackagesFromPrompt, isString};
+export {castArray, getPackagesFromEditor, getPackagesFromProject, getPackagesFromPrompt, isObject, isString};
