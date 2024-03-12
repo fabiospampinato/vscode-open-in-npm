@@ -12,6 +12,15 @@ const castArray = <T> ( value: T | T[] ): T[] => {
 
 };
 
+const castArraySplitted = ( value: string | string[] ): string[] => {
+
+  const splitRe = /[\s,]+/g;
+  const splits = castArray ( value ).map ( value => value.split ( splitRe ) ).flat ().filter ( Boolean );
+
+  return splits;
+
+};
+
 const getPackagesFromEditor = (): string[] | undefined => {
 
   const {activeTextEditor} = vscode.window;
@@ -58,4 +67,4 @@ const isString = ( value: unknown ): value is string => {
 
 /* EXPORT */
 
-export {castArray, getPackagesFromEditor, getPackagesFromProject, getPackagesFromPrompt, isObject, isString};
+export {castArray, castArraySplitted, getPackagesFromEditor, getPackagesFromProject, getPackagesFromPrompt, isObject, isString};
