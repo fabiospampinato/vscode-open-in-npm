@@ -1,3 +1,6 @@
+### Version 2.1.0
+- Added support for opening multiple comma/space separated packages at once
+
 ### Version 2.0.3
 - Addressed an edge case when the extension is opened in an empty workspace
 
