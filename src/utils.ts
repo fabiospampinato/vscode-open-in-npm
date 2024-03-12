@@ -1,9 +1,8 @@
 
 /* IMPORT */
 
-import findUp from 'find-up-json';
 import vscode from 'vscode';
-import {getProjectRootPath} from 'vscode-extras';
+import {getPackage, prompt} from 'vscode-extras';
 
 /* MAIN */
 
@@ -30,14 +29,7 @@ const getPackagesFromEditor = (): string[] | undefined => {
 
 const getPackagesFromProject = (): string | undefined => {
 
-  const repoPath = getProjectRootPath ();
-
-  if ( !repoPath ) return;
-
-  const pkg = findUp ( 'package.json', repoPath )?.content;
-
-  if ( !pkg ) return;
-
+  const pkg = getPackage ()?.content;
   const isPackage = ( 'name' in pkg ) && isString ( pkg.name );
 
   if ( !isPackage ) return;
@@ -48,10 +40,7 @@ const getPackagesFromProject = (): string | undefined => {
 
 const getPackagesFromPrompt = async ( value?: string ): Promise<string | undefined> => {
 
-  return await vscode.window.showInputBox ({
-    placeHolder: 'NPM package name...',
-    value
-  });
+  return prompt.string ( 'NPM package name...', value );
 
 };
 

@@ -1,7 +1,7 @@
 
 /* IMPORT */
 
-import vscode from 'vscode';
+import {openInExternal} from 'vscode-extras';
 import {castArray, getPackagesFromEditor, getPackagesFromProject, getPackagesFromPrompt} from './utils';
 
 /* MAIN */
@@ -16,7 +16,7 @@ const open = async ( names?: string | string[] ): Promise<void> => {
 
     const url = `https://www.npmjs.com/package/${name}`;
 
-    vscode.env.openExternal ( vscode.Uri.parse ( url ) );
+    openInExternal ( url );
 
   }
 
